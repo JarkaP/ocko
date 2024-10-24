@@ -22,6 +22,9 @@ export default {
             fontFamily: {
                 sans: ['Noto Sans', ...defaultTheme.fontFamily.sans],
             },
+            screens: {
+                xs: '480px',
+            },
             colors: {},
         },
     },

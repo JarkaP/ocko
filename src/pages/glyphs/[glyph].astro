@@ -1,0 +1,35 @@
+---
+import { getCollection, render } from 'astro:content'
+import Layout from '../../layouts/Layout.astro'
+
+export async function getStaticPaths() {
+    const glyphs = await getCollection('glyphs')
+    return glyphs.map((glyph) => ({
+        params: { glyph: glyph.data.unicodeDecimal },
+        props: { glyph },
+    }))
+}
+
+const { glyph } = Astro.props
+const { Content } = await render(glyph)
+---
+
+<Layout title={glyph.data.title}>
+    <ul>
+        <li>Unicode Decimal: {glyph.data.unicodeDecimal}</li>
+        <li>Script: {glyph.data.script}</li>
+    </ul>
+    <Content />
+
+    <div class="text-7xl">
+        {
+            glyph.data.lowerCase === glyph.data.upperCase ? (
+                <span>{glyph.data.upperCase}</span>
+            ) : (
+                <span>
+                    {glyph.data.upperCase} {glyph.data.lowerCase}
+                </span>
+            )
+        }
+    </div>
+</Layout>

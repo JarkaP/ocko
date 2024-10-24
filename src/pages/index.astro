@@ -1,12 +1,42 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import { getCollection } from 'astro:content'
+
+const glyphs = (await getCollection('glyphs')).sort(
+    (a, b) => a.data.unicodeDecimal - b.data.unicodeDecimal
+)
 ---
 
-<Layout title="OOO">
-    <header class="mb-8">
-        <h1 class="text-3xl font-bold md:text-6xl">O variants</h1>
-    </header>
-    <main class="mb-8">
-        <p class="text-lg">Toto je hlavní obsah stránky.</p>
-    </main>
+<Layout title="O glyphs">
+    <table>
+        <thead>
+            <tr>
+                <th class="xs:text-lg text-sm md:text-xl lg:text-2xl">Name</th>
+                <th class="xs:text-lg text-sm md:text-xl lg:text-2xl">Glyph</th>
+                <th class="xs:text-lg text-sm md:text-xl lg:text-2xl">Script</th>
+            </tr>
+        </thead>
+        <tbody>
+            {
+                glyphs.map((glyph) => (
+                    <tr class="relative">
+                        <td class="xs:text-lg text-sm md:text-xl lg:text-2xl">
+                            <a
+                                href={`/glyphs/${glyph.data.unicodeDecimal}`}
+                                class="no-underline after:absolute after:inset-0"
+                            >
+                                {glyph.data.title}
+                            </a>
+                        </td>
+                        <td class="xs:text-lg text-sm md:text-xl lg:text-2xl">
+                            {glyph.data.upperCase}
+                        </td>
+                        <td class="xs:text-lg text-sm md:text-xl lg:text-2xl">
+                            {glyph.data.script}
+                        </td>
+                    </tr>
+                ))
+            }
+        </tbody>
+    </table>
 </Layout>
