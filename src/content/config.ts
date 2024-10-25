@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content'
 
-import { glob, file } from 'astro/loaders' // Not available with legacy API
+import { glob } from 'astro/loaders'
 
 const glyphs = defineCollection({
     loader: glob({ pattern: '**/*.md', base: './src/content/glyphs' }),
