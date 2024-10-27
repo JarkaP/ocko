@@ -34,7 +34,7 @@ const scripts = [...new Set(glyphs.map((glyph) => glyph.data.script))]
                     <tr class="relative" data-script={glyph.data.script}>
                         <td class="text-sm xs:text-lg md:text-xl lg:text-2xl">
                             <a
-                                href={`/glyphs/${glyph.data.unicodeDecimal}`}
+                                href={`/ocko/glyphs/${glyph.data.unicodeDecimal}`}
                                 class="no-underline after:absolute after:inset-0"
                             >
                                 {glyph.data.title}
