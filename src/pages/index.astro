@@ -14,7 +14,7 @@ const scripts = [...new Set(glyphs.map((glyph) => glyph.data.script))]
         <select
             id="scriptFilter"
             aria-label="Script"
-            class="rounded-md border border-stone-300 bg-white px-3 focus:border-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-700 sm:text-sm"
+            class="rounded-md border border-stone-300 bg-white px-3 focus:border-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-700 dark:border-stone-900 dark:bg-stone-700 dark:text-stone-100 dark:focus:border-stone-100 dark:focus:ring-stone-100 sm:text-sm"
         >
             <option value="">all</option>
             {scripts.map((script) => <option value={script}>{script}</option>)}
