@@ -8,9 +8,11 @@ const glyphs = defineCollection({
     schema: z.object({
         title: z.string(),
         unicodeDecimal: z.number(),
+        unicode: z.string(),
         script: z.string(),
         lowerCase: z.string(),
         upperCase: z.string(),
+        numericalValue: z.number().optional(),
     }),
 })
 
