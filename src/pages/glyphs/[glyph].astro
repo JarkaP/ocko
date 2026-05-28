@@ -16,20 +16,33 @@ const { Content } = await render(glyph)
 
 <Layout title={glyph.data.title}>
     <ul>
+        <li>Unicode: {glyph.data.unicode}</li>
         <li>Unicode Decimal: {glyph.data.unicodeDecimal}</li>
         <li>Script: {glyph.data.script}</li>
+        {glyph.data.numericalValue !== undefined && (
+            <li>Numerical Value: {glyph.data.numericalValue}</li>
+        )}
     </ul>
     <Content />
 
-    <div class="text-7xl">
-        {
-            glyph.data.lowerCase === glyph.data.upperCase ? (
-                <span>{glyph.data.upperCase}</span>
-            ) : (
-                <span>
-                    {glyph.data.upperCase} {glyph.data.lowerCase}
-                </span>
-            )
-        }
+    <div class="not-prose mt-6 flex flex-wrap items-center gap-8">
+        <img
+            src={`/ocko/glyphs/${glyph.data.unicode.replace('U+', '')}.svg`}
+            alt={`${glyph.data.title} – rendered glyph`}
+            width="200"
+            height="200"
+            class="rounded-lg border border-stone-200 dark:invert dark:border-stone-600"
+        />
+        <div class="text-7xl">
+            {
+                glyph.data.lowerCase === glyph.data.upperCase ? (
+                    <span>{glyph.data.upperCase}</span>
+                ) : (
+                    <span>
+                        {glyph.data.upperCase} {glyph.data.lowerCase}
+                    </span>
+                )
+            }
+        </div>
     </div>
 </Layout>
