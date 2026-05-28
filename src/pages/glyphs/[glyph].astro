@@ -37,26 +37,59 @@ const lowerSvg = showLower ? await generateGlyphSvg(glyph.data.lowerCase, glyph.
             class="copy-btn group relative flex h-[120px] cursor-copy items-end dark:invert"
             data-char={glyph.data.upperCase}
             title="Copy"
-            set:html={upperSvg}
-        />
+            aria-label="Copy uppercase glyph"
+            x-data="{
+                copied: false,
+                copy() {
+                    navigator.clipboard.writeText(this.$el.dataset.char)
+                    this.copied = true
+                    setTimeout(() => { this.copied = false }, 1500)
+                },
+            }"
+            x-on:click="copy()"
+        >
+            <Fragment set:html={upperSvg} />
+            <span
+                x-show="copied"
+                x-transition.opacity
+                class="pointer-events-none absolute inset-x-0 -top-8 flex justify-center"
+            >
+                <span
+                    class="rounded bg-stone-800 px-2 py-1 text-xs text-white dark:bg-stone-100 dark:text-stone-900"
+                >
+                    Copied!
+                </span>
+            </span>
+        </button>
         {
             showLower && lowerSvg && (
                 <button
                     class="copy-btn group relative flex h-[120px] cursor-copy items-end dark:invert"
                     data-char={glyph.data.lowerCase}
                     title="Copy"
-                    set:html={lowerSvg}
-                />
+                    aria-label="Copy lowercase glyph"
+                    x-data="{
+                        copied: false,
+                        copy() {
+                            navigator.clipboard.writeText(this.$el.dataset.char)
+                            this.copied = true
+                            setTimeout(() => { this.copied = false }, 1500)
+                        },
+                    }"
+                    x-on:click="copy()"
+                >
+                    <Fragment set:html={lowerSvg} />
+                    <span
+                        x-show="copied"
+                        x-transition.opacity
+                        class="pointer-events-none absolute inset-x-0 -top-8 flex justify-center"
+                    >
+                        <span class="rounded bg-stone-800 px-2 py-1 text-xs text-white dark:bg-stone-100 dark:text-stone-900">
+                            Copied!
+                        </span>
+                    </span>
+                </button>
             )
         }
     </div>
-
-    <script>
-        document.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach((btn) => {
-            btn.addEventListener('click', async () => {
-                const char = btn.dataset.char ?? ''
-                await navigator.clipboard.writeText(char)
-            })
-        })
-    </script>
 </Layout>

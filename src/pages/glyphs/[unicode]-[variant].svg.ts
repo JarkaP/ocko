@@ -23,7 +23,6 @@ export const GET: APIRoute = async ({ props }) => {
     return new Response(svg, {
         headers: {
             'Content-Type': 'image/svg+xml',
-            'Cache-Control': 'public, max-age=31536000',
         },
     })
 }
