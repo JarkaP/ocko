@@ -1,9 +1,19 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import { getCollection } from 'astro:content'
+import { generateGlyphSvg } from '../utils/generateGlyphSvg'
 
 const glyphs = (await getCollection('glyphs')).sort(
     (a, b) => a.data.unicodeDecimal - b.data.unicodeDecimal
+)
+
+const glyphSvgs = Object.fromEntries(
+    await Promise.all(
+        glyphs.map(async (glyph) => [
+            glyph.id,
+            await generateGlyphSvg(glyph.data.upperCase, glyph.data.script),
+        ])
+    )
 )
 
 const scripts = [...new Set(glyphs.map((glyph) => glyph.data.script))]
@@ -41,10 +51,9 @@ const scripts = [...new Set(glyphs.map((glyph) => glyph.data.script))]
                             </a>
                         </td>
                         <td>
-                            <img
-                                src={`/ocko/glyphs/${glyph.data.unicode.replace('U+', '')}.svg`}
-                                alt={glyph.data.title}
-                                class="!m-0 dark:invert w-[1.5em] h-[1.5em] sm:w-[2em] sm:h-[2em] md:w-[3em] md:h-[3em] lg:w-[4em] lg:h-[4em]"
+                            <div
+                                class="!m-0 dark:invert w-[1.5em] h-[1.5em] sm:w-[2em] sm:h-[2em] md:w-[3em] md:h-[3em] lg:w-[4em] lg:h-[4em] [&>svg]:w-full [&>svg]:h-full"
+                                set:html={glyphSvgs[glyph.id]}
                             />
                         </td>
                         <td class="text-sm xs:text-lg md:text-xl lg:text-2xl">

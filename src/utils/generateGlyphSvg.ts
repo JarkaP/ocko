@@ -1,5 +1,3 @@
-import type { APIRoute } from 'astro'
-import { getCollection } from 'astro:content'
 import satori, { type SatoriOptions } from 'satori'
 import { join } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
@@ -11,25 +9,15 @@ function readFont(...parts: string[]): Buffer | null {
 }
 
 const notoSansData = readFont(
-    'node_modules/@fontsource/noto-sans/files/noto-sans-cyrillic-ext-400-normal.woff',
+    'node_modules/@fontsource/noto-sans/files/noto-sans-cyrillic-ext-400-normal.woff'
 )
 
 const notoGothicData = readFont(
     'node_modules/@fontsource/noto-sans-gothic/files/noto-sans-gothic-gothic-400-normal.woff'
 )
 
-export async function getStaticPaths() {
-    const glyphs = await getCollection('glyphs')
-    return glyphs.map((glyph) => ({
-        params: { unicode: glyph.data.unicode.replace('U+', '') },
-        props: { glyph },
-    }))
-}
-
-export const GET: APIRoute = async ({ props }) => {
-    const { glyph } = props
-    const char = glyph.data.upperCase
-    const isGothic = glyph.data.script === 'gothic'
+export async function generateGlyphSvg(char: string, script: string): Promise<string> {
+    const isGothic = script === 'gothic'
     const fontFamily = isGothic ? 'Noto Sans Gothic' : 'Noto Sans'
 
     const fonts: SatoriOptions['fonts'] = []
@@ -57,14 +45,16 @@ export const GET: APIRoute = async ({ props }) => {
                 children: char,
             },
         } as any,
-        { width: 200, height: 200, fonts },
+        { width: 200, height: 200, fonts }
     )
 
     // Crop the SVG
     const pathMatches = [...svg.matchAll(/\sd="([^"]+)"/g)]
-    let trimmedSvg = svg
     if (pathMatches.length > 0) {
-        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        let minX = Infinity,
+            minY = Infinity,
+            maxX = -Infinity,
+            maxY = -Infinity
         for (const match of pathMatches) {
             const [x1, y1, x2, y2] = svgPathBbox(match[1])
             minX = Math.min(minX, x1)
@@ -74,16 +64,11 @@ export const GET: APIRoute = async ({ props }) => {
         }
         const w = Math.ceil(maxX - minX)
         const h = Math.ceil(maxY - minY)
-        trimmedSvg = svg
+        return svg
             .replace(/\bwidth="\d+(\.\d+)?"/, `width="${w}"`)
             .replace(/\bheight="\d+(\.\d+)?"/, `height="${h}"`)
             .replace(/\bviewBox="[^"]*"/, `viewBox="${minX} ${minY} ${w} ${h}"`)
     }
 
-    return new Response(trimmedSvg, {
-        headers: {
-            'Content-Type': 'image/svg+xml',
-            'Cache-Control': 'public, max-age=31536000',
-        },
-    })
+    return svg
 }
