@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content'
 import satori, { type SatoriOptions } from 'satori'
 import { join } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
+import { svgPathBbox } from 'svg-path-bbox'
 
 function readFont(...parts: string[]): Buffer | null {
     const filePath = join(process.cwd(), ...parts)
@@ -59,7 +60,27 @@ export const GET: APIRoute = async ({ props }) => {
         { width: 200, height: 200, fonts },
     )
 
-    return new Response(svg, {
+    // Crop the SVG
+    const pathMatches = [...svg.matchAll(/\sd="([^"]+)"/g)]
+    let trimmedSvg = svg
+    if (pathMatches.length > 0) {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        for (const match of pathMatches) {
+            const [x1, y1, x2, y2] = svgPathBbox(match[1])
+            minX = Math.min(minX, x1)
+            minY = Math.min(minY, y1)
+            maxX = Math.max(maxX, x2)
+            maxY = Math.max(maxY, y2)
+        }
+        const w = Math.ceil(maxX - minX)
+        const h = Math.ceil(maxY - minY)
+        trimmedSvg = svg
+            .replace(/\bwidth="\d+(\.\d+)?"/, `width="${w}"`)
+            .replace(/\bheight="\d+(\.\d+)?"/, `height="${h}"`)
+            .replace(/\bviewBox="[^"]*"/, `viewBox="${minX} ${minY} ${w} ${h}"`)
+    }
+
+    return new Response(trimmedSvg, {
         headers: {
             'Content-Type': 'image/svg+xml',
             'Cache-Control': 'public, max-age=31536000',
